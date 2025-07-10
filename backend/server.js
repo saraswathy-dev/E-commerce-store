@@ -4,6 +4,7 @@ import authRoutes from "./routes/auth.route.js";
 import productsRoutes from "./routes/product.route.js";
 import cartRoutes from "./routes/cart.route.js";
 import couponRoutes from "./routes/coupon.route.js";
+import paymentRoutes from "./routes/payment.route.js";
 import cors from "cors";
 import { connectDB } from "./lib/db.js";
 import cookieParser from "cookie-parser";
@@ -25,6 +26,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/cart",cartRoutes);
 app.use("/api/coupons",couponRoutes)
+app.use("/api/payments",paymentRoutes);
 
 // Start Server
 app.listen(PORT, () => {
