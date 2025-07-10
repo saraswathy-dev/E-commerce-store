@@ -2,7 +2,7 @@ import Coupon from "../models/coupon.model.js";
 import Stripe from "stripe";
 import dotenv from "dotenv";
 import Order from "../models/order.model.js";
-import { createNewCoupon } from "../utils/coupon.utils.js";
+
 dotenv.config();
 export const createCheckoutSession = async (req, res) => {
   try {
@@ -58,9 +58,10 @@ export const createCheckoutSession = async (req, res) => {
           ]
         : [],
       metadata: {
-        userId: req.user._id.tostring(),
+        userId: req.user._id.toString(),
         couponCode: couponCode || "", // Store the coupon ID if used
-        products: JSON.stringify(products.map((p)=>({
+        products: JSON.stringify(
+          products.map((p)=>({
             id: p._id,
             price: p.price,
             quantity: p.quantity,
@@ -85,6 +86,11 @@ export const createCheckoutSession = async (req, res) => {
 export const checkoutSucess = async (req, res) => {
   try {
  const {sessionId} = req.body;
+ const Stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  if (!sessionId) {
+      return res.status(400).json({ error: "Session ID is required." });
+    }
+    // Retrieve the session from Stripe
  const session =await Stripe.checkout.sessions.retrieve(sessionId);
     if (session.payment_status === "paid") {
 if(session.metadata.couponCode) {
@@ -127,12 +133,12 @@ async function createStripeCoupons(discountPercentage) {
     return coupon.id; 
 }// Return the Stripe coupon ID
 async function createNewCoupon(userId) {
-  const createNewCoupons = new Coupon({
+  const newCoupon = new Coupon({
     code: "GIFT" + Math.random().toString(36).substring(2, 8).toUpperCase(),
     discountPercentage: 10, // Example discount percentage
     expieryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
     userId: userId,
   });
-  await createNewCoupons.save();
+  await newCoupon.save();
   return newCoupon;
 }
