@@ -1,6 +1,8 @@
 import Coupon from "../models/coupon.model.js";
 import Stripe from "stripe";
 import dotenv from "dotenv";
+import Order from "../models/order.model.js";
+import { createNewCoupon } from "../utils/coupon.utils.js";
 dotenv.config();
 export const createCheckoutSession = async (req, res) => {
   try {
@@ -58,6 +60,13 @@ export const createCheckoutSession = async (req, res) => {
       metadata: {
         userId: req.user._id.tostring(),
         couponCode: couponCode || "", // Store the coupon ID if used
+        products: JSON.stringify(products.map((p)=>({
+            id: p._id,
+            price: p.price,
+            quantity: p.quantity,
+            
+        })),
+     ) // Store products in metadata
       },
     });
     if (totalAmount >= 20000) {
@@ -72,6 +81,42 @@ export const createCheckoutSession = async (req, res) => {
     return res.status(500).json({ error: "Internal server error." });
   }
 };
+
+export const checkoutSucess = async (req, res) => {
+  try {
+ const {sessionId} = req.body;
+ const session =await Stripe.checkout.sessions.retrieve(sessionId);
+    if (session.payment_status === "paid") {
+if(session.metadata.couponCode) {
+    await Coupon.findOneAndUpdate(
+      { code: session.metadata.couponCode, userId: req.user._id },
+      { isActive: false },
+      
+    );
+    }
+
+    const products = JSON.parse(session.metadata.products);
+    const newOrder= new Order({
+        user: session.metadata.userId,
+        products: products.map((p) => ({
+          product: p.id,
+          price: p.price,
+          quantity: p.quantity,
+        })),
+        totalAmount: session.amount_total / 100, // Convert to dollars
+      
+        stripeSessionId: session.id,
+    })
+    await newOrder.save();
+    return res.status(200).json({ message: "Payment successful and order created.",orderId:newOrder._id,success:true });
+
+
+  }} catch (error) {
+    console.error("Error retrieving checkout session:", error);
+    return res.status(500).json({ error: "Internal server error." });
+  }
+};
+
 async function createStripeCoupons(discountPercentage) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
  
