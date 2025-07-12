@@ -7,7 +7,7 @@ const Navbar = () => {
   const isAdmin = false; // Replace with actual admin state management
   return (
     <>
-      <header className="fixed top-0 left-0 w-full bg-gray-900 bg-opacity-90 backdrop-blur-md shadow-lg z-40 transition-all duration-300 border-b border-emerald-800 ">
+      <header className="fixed top-0 left-0 w-full bg-gray-900 bg-opacity-90 backdrop-blur-md shadow-lg z-40 transition-all duration-300 border-b border-gray-800 ">
         <div className="container mx-auto px-2 py-4 flex justify-between items-center   ">
           <Link
             to="/"
