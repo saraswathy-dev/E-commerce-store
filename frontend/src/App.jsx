@@ -1,11 +1,20 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Signup from "./pages/signup";
 import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
+import { Toaster } from "react-hot-toast";
+import { useUserStore } from "./stores/useUserStore";
+import ProtectedRoute from "./routes/ProtectedRoute";
 import "./App.css";
+import { useEffect } from "react";
 
 function App() {
+  const {user,checkAuth}=useUserStore();
+
+  useEffect(()=>{
+    checkAuth();
+  },[checkAuth])
   
 
   return (
@@ -18,14 +27,15 @@ function App() {
 </div>
 
       {/* main content */}
-      <div className="relative z-10 p-20">
+      <div className="relative z-10 px-10 py-15">
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/signup" element={!user ? <Signup /> :<Navigate to="/"></Navigate> } />
+          <Route path="/login" element={ <Login />} />
         </Routes>
       </div>
+      <Toaster></Toaster>
     </div>
   );
 }

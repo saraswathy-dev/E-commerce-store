@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { UserPlus, Mail, Lock, User, ArrowRight, Loader } from "lucide-react";
 import { motion } from "framer-motion";
+import {useUserStore} from "../stores/useUserStore.js"
 
-const signup = () => {
-  const loading = true;
+const Signup = () => {
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -12,19 +13,24 @@ const signup = () => {
     confirmPassword: "",
   });
 
+  const {signup,loading,user}=useUserStore();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    signup(formData);
   };
+
+ 
   return (
-    <div className="container rounded-lg shadow-lg p-10 mt-10 min-h-screen mx-auto">
+    <div className="w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl px-4 sm:px-6 rounded-lg shadow-lg py-10 mt-10 min-h-screen mx-auto">
+
       <motion.div
         className="text-center w-full max-w-md mx-auto"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h1 className="text-4xl text-blue-800 font-bold">
+        <h1 className="text-2xl  text-blue-800 font-bold sm:text-4xl">
           Create your account
         </h1>
       </motion.div>
@@ -34,10 +40,10 @@ const signup = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 ,delay:0.2}}>
 
-      <form
-        className="mt-10 bg-gray-300 p-8 rounded-lg w-full max-w-md mx-auto "
-        onSubmit={handleSubmit}
-      >
+     <form
+  className="mt-10 bg-gray-300 p-8 rounded-lg w-full max-w-* sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto px-4 sm:px-6"
+  onSubmit={handleSubmit}
+>
         <div className="mb-6">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
@@ -109,21 +115,20 @@ const signup = () => {
         <div className="mb-6">
           <button
             type="submit"
-            className="flex items-center justify-center
+            className="flex items-center justify-center text-sm sm:text-base
  bg-blue-600 rounded py-2 px-2 w-full font-semibold hover:bg-blue-700 transition "
           >
             {loading ?( <>
-            <Loader className="animate-spin " arial-hidden="true"></Loader>Loading<span className="ml-1 animate-pulse">• • •</span> </>):(<>
-            <UserPlus className="mr-2 h-5 w-5" arial-hidden="true"/>Sign up</>)}
+            <Loader className="animate-spin " aria-hidden="true"></Loader>Loading<span className="ml-1 animate-pulse">• • •</span> </>):(<>
+            <UserPlus className="mr-2 h-5 w-5" aria-hidden="true"/>Sign up</>)}
             
           </button>
         </div>
       </form>
       <p className="text-center pt-5 text-black">
         Already have an account?{" "}
-        <Link className="text-blue-700" href="/login">
-          {" "}
-          Login here
+        <Link className="text-blue-700" to="/login">
+      Login here
         </Link>
       </p>
       </motion.div>
@@ -131,4 +136,4 @@ const signup = () => {
   );
 };
 
-export default signup;
+export default Signup;
