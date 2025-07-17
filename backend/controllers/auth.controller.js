@@ -5,10 +5,10 @@ import { redis } from "../lib/redis.js";
 dotenv.config();
 
 const generateToken = (userId) => {
-  const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN, {
+  const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "15m",
   });
-  const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN, {
+  const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: "7d",
   });
   return { accessToken, refreshToken };
@@ -21,22 +21,28 @@ const storeRefreshToken = async (userId, refreshToken) => {
     60 * 60 * 24 * 7
   ); // Store for 7 days
 };
+const isProduction = process.env.NODE_ENV === "production";
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: isProduction,           // true in production, false in dev
+  sameSite: isProduction ? "Strict" : "Lax", // ✅ Lax for dev so cross-origin cookies work
+  path: "/",
+};
+
 const setCookies = (res, refreshToken, accessToken) => {
   res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-    sameSite: "Strict", // Adjust as necessary
-    maxAge: 60 * 60 * 24 * 7 * 1000, // 7 days in milliseconds
+    ...cookieOptions,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
-  // Respond with the user data and access token
+
   res.cookie("accessToken", accessToken, {
-    httpOnly: true, //prevents client-side JavaScript from accessing the cookie
-    // This is important for security, especially in production
-    secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-    sameSite: "Strict", // Adjust as necessary// prevents CSRF attacks
-    maxAge: 15 * 60 * 1000, // 15 minutes in milliseconds
+    ...cookieOptions,
+    maxAge: 15 * 60 * 1000, // 15 mins
   });
 };
+
+
 export const signup = async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -90,6 +96,7 @@ export const login = async (req, res) => {
           email: user.email,
           role: user.role,
         },
+        
         message: "Login successful",
       });
     } else {
@@ -105,7 +112,7 @@ export const logout = async (req, res) => {
     return res.status(401).json({ message: "No refresh token provided" });
   }
   try {
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     await redis.del(`refreshToken:${decoded.userId}`); // Remove the refresh token from Redis
     res.clearCookie("refreshToken"); // Clear the cookie
     res.clearCookie("accessToken"); // Clear the access token cookie
@@ -147,7 +154,20 @@ export const refreshAccessToken = async (req, res) => {
 
 export const getProfile = async (req, res) => {
   try {
-    res.json(req.user);
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const { _id, name, email, role } = req.user;
+
+    res.status(200).json({
+      user: {
+        _id,
+        name,
+        email,
+        role,
+      },
+    }); // ✅ wrap in `user` object
   } catch (error) {
     console.error("Error fetching user profile:", error);
     res.status(500).json({ message: "Internal server error" });

@@ -7,7 +7,8 @@ export const protectRoute =async (req, res,next) => {
      return res.status(401).json({ message: "Unauthorized-no access token found" });
     } 
     try {
-        const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+        const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+
         const user=await User.findById(decoded.userId).select("-password");
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -19,7 +20,7 @@ export const protectRoute =async (req, res,next) => {
         if(error.name === 'TokenExpiredError') {
             return res.status(401).json({ message: "Access token expired" });
         }
-       throw new Error("Invalid access token");
+       return res.status(401).json({ message: "Invalid access token" });
     }
     } catch (error) {
         console.error("Error in protectroute middleware:", error);

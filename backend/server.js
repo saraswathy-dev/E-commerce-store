@@ -15,7 +15,10 @@ const PORT = process.env.PORT || 5000;
 const app = express();
 
 // Middleware
-app.use(cors()); // Enable CORS for all origins
+app.use(cors({
+    origin: "http://localhost:5173", // or your frontend domain
+    credentials: true,               // allow cookies
+  })); // Enable CORS for all origins
 app.use(express.json()); // Required for parsing JSON in POST requests
 app.use(cookieParser()); // Middleware to parse cookies
 app.get("/", (req, res) => {
