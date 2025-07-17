@@ -33,7 +33,7 @@ export const useUserStore = create((set, get) => ({
     try {
       const res = await axios.post("/auth/login", { email, password });
       set({ user: res.data.user, loading: false });
-      toast.success("Signup successful! 🎉");
+      toast.success("Login successful! 🎉");
     } catch (error) {
       set({ loading: false });
       toast.error(error.response.data.message || "An error occured");
@@ -50,14 +50,35 @@ export const useUserStore = create((set, get) => ({
     }
   },
 
-  checkAuth: async () => {
-    set({ checkingAuth: true });
-    try {
-      const response = await axios.get("/auth/profile");
-      set({ user: response.data, checkingAuth: false });
-      console.log(user);
-    } catch (error) {
-      set({ checkingAuth: false, user: null });
+checkAuth: async () => {
+  set({ checkingAuth: true });
+
+  try {
+    const response = await axios.get("/auth/profile", { withCredentials: true });
+
+    set({ user: response.data, checkingAuth: false });
+
+  } catch (error) {
+    if (error.response?.status === 401) {
+      // Access token expired — try to refresh it
+      try {
+        await axios.post("/auth/refresh-token", {}, { withCredentials: true });
+
+        const res = await axios.get("/auth/profile", { withCredentials: true });
+
+        set({ user: res.data, checkingAuth: false });
+
+      } catch (refreshErr) {
+        // Refresh failed — clear user
+        set({ user: null, checkingAuth: false });
+      }
+
+    } else {
+      // Some other error
+      set({ user: null, checkingAuth: false });
     }
-  },
+  }
+},
+
+
 }));

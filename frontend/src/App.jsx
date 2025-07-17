@@ -10,12 +10,18 @@ import "./App.css";
 import { useEffect } from "react";
 
 function App() {
-  const {user,checkAuth}=useUserStore();
+  const {user,checkAuth,checkingAuth}=useUserStore();
 
   useEffect(()=>{
     checkAuth();
   },[checkAuth])
-  
+   if (checkingAuth) {
+    return (
+      <div className="min-h-screen flex justify-center items-center text-white">
+        <p>Checking session...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
@@ -32,7 +38,8 @@ function App() {
         <Routes>
           <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
           <Route path="/signup" element={!user ? <Signup /> :<Navigate to="/"></Navigate> } />
-          <Route path="/login" element={ <Login />} />
+          <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+
         </Routes>
       </div>
       <Toaster></Toaster>
