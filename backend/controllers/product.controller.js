@@ -74,6 +74,7 @@ export const createProduct = async (req, res) => {
         : null,
       category,
     });
+    await product.save();
     res.status(201).json(product);
   } catch (error) {
     res

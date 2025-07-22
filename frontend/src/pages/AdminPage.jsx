@@ -5,7 +5,7 @@ import ProductsList from "../components/ProductsList";
 import AnalyticsTab from "../components/AnalyticsTab";
 import CreateProductForm from "../components/CreateProductForm";
 const tabs = [
-  { id: "create", label: "create Product", icon: PlusCircle },
+  { id: "create", label: "Create Product", icon: PlusCircle },
   { id: "Products", label: "Products", icon: ShoppingBasket },
   { id: "analytics", label: "Analytics", icon: BarChart },
 ];
@@ -27,14 +27,14 @@ export const AdminPage = () => {
           {tabs.map((tab) => (
             <button
               key={tab.id}
-                onClick={() => setActiveTabs(tab.id)}
-              className={`flex items-center  px-4 py-2 mx-2 rounded-md transition-colors duration-200 ${
+              onClick={() => setActiveTabs(tab.id)}
+              className={`flex items-center  px-4 py-2 mx-2  rounded-md transition-colors duration-200 sm:text-base  ${
                 activeTabs === tab.id
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 text-gray-800 hover:bg-gray-600"
               }`}
             >
-              <tab.icon className="mr-2 h-5 w-5"></tab.icon>
+              <tab.icon className="mr-2 h-5 w-5 "></tab.icon>
               {tab.label}
             </button>
           ))}

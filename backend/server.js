@@ -19,7 +19,7 @@ app.use(cors({
     origin: "http://localhost:5173", // or your frontend domain
     credentials: true,               // allow cookies
   })); // Enable CORS for all origins
-app.use(express.json()); // Required for parsing JSON in POST requests
+app.use(express.json({limit:"10mb"})); // Required for parsing JSON in POST requests
 app.use(cookieParser()); // Middleware to parse cookies
 app.get("/", (req, res) => {
   res.send("Welcome to the API");
