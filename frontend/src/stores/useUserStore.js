@@ -56,7 +56,7 @@ checkAuth: async () => {
   try {
     const response = await axios.get("/auth/profile", { withCredentials: true });
 
-    set({ user: response.data, checkingAuth: false });
+    set({ user: response.data.user, checkingAuth: false });
 
   } catch (error) {
     if (error.response?.status === 401) {

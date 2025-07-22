@@ -59,7 +59,7 @@ const Navbar = () => {
             )}
             {isAdmin && (
               <Link
-                to="/admin"
+                to="/secret-dashboard"
                 className="bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center"
               >
                 <Lock className="inline-block mr-1" size={18}></Lock>
@@ -109,7 +109,7 @@ const Navbar = () => {
 
             {isAdmin && (
               <Link
-                to="/admin"
+                to="/secret-dashboard"
                 className="block bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700"
               >
                 <Lock className="inline-block mr-1" size={18} />

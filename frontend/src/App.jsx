@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import Signup from "./pages/signup";
 import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
+import { AdminPage } from "./pages/AdminPage.jsx";
 import { Toaster } from "react-hot-toast";
 import { useUserStore } from "./stores/useUserStore";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -39,6 +40,7 @@ function App() {
           <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
           <Route path="/signup" element={!user ? <Signup /> :<Navigate to="/"></Navigate> } />
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+          <Route path="/secret-dashboard" element={user?.role === "admin" ? <AdminPage></AdminPage> : <Login></Login>}/>
 
         </Routes>
       </div>
