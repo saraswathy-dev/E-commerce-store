@@ -16,6 +16,7 @@ function App() {
   useEffect(()=>{
     checkAuth();
   },[checkAuth])
+  
    if (checkingAuth) {
     return (
       <div className="min-h-screen flex justify-center items-center text-white">
