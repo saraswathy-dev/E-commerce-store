@@ -99,13 +99,17 @@ export const deleteProduct = async (req, res) => {
       catch (error) {
         console.error("Error deleting image from Cloudinary:", error);
       }
-      await Product.deleteOne({ _id: req.params.id });
+      
       // Invalidate the cache for featured products
-  } }
+  } await Product.deleteOne({ _id: req.params.id });
+      return res.status(200).json({ message: "Product deleted successfully" });}
+    
+
   catch (error) {
     console.error("Error deleting product:", error);
     res.status(500).json({ message: "Error deleting product", error });
   }
+  
 }
 export const getProductsByCategory = async (req, res) => {
   try {
