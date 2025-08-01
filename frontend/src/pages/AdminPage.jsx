@@ -16,11 +16,11 @@ const tabs = [
 
 
 export const AdminPage = () => {
-  const {fetchAllProducts,products}= useProductStore();
+  const {fetchAllProducts,products,fetchProductsByCategory}= useProductStore();
 
   useEffect(() => {
   fetchAllProducts();
-  console.log(products)
+  
   }, []);
 
   const [activeTabs, setActiveTabs] = useState("create");

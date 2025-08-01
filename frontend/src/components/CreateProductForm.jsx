@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 import { PlusCircle, Upload, Loader } from "lucide-react";
 import {useProductStore} from "../stores/useProductStore"
 const categories = [
-  "jean",
+  "jeans",
   "t-shirt",
-  "shoe",
+  "shoes",
   "glasses",
   "jacket",
   "suit",
